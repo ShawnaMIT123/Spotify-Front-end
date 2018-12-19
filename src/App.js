@@ -6,13 +6,35 @@ import { Route } from 'react-router-dom';
 import SearchBar from './components/SearchBar'
 import BrowseBar from './components/BrowseBar'
 import Room from './containers/Room'
+import {connect} from 'react-redux'
 
 const button = () => {return <Button as="a" href="http://localhost:3000/api/v1/login"> Login </Button>}
 
 
 class App extends Component {
 
- state = {browseResults: []}
+ state = {browseResults: [],
+   playlistSongs: []
+ }
+
+ componentDidMount(){
+
+   setInterval(this.getData, 1000);
+ }
+
+ getData = () => {
+   fetch("http://localhost:3000/api/v1/rooms", {
+     method: 'GET', // or 'PUT'
+     headers:{
+       'Content-Type': 'application/json'
+     }
+   }).then(res => res.json())
+   .then(response => {
+     this.setState({playlistSongs: response[0]["tracks"]})
+     console.log('Success:', response)}
+ )
+   .catch(error => console.error('Error:', error))
+ }
 
   onSearchSubmit = (term) => {
     fetch("http://localhost:3000/api/v1/users/addPlaylist", {
@@ -33,7 +55,7 @@ class App extends Component {
       // })
       // this.setState({images: response.data.results })
     }
-
+///search spotify api for aritst and returning tracks to state which will then be used as brower bar results
     onBrowseChange = (term) => {
       fetch("http://localhost:3000/api/v1/users/browserBar", {
         method: 'POST', // or 'PUT'
@@ -43,6 +65,7 @@ class App extends Component {
         }
       }).then(res => res.json())
       .then(response => {
+
         console.log('Success:', JSON.stringify(response))
         let resultsJSON = response["tracks"].items.map((track)=>{
           return {"title": track.name,
@@ -53,6 +76,7 @@ class App extends Component {
         console.log(resultsJSON)
 
         this.setState({browseResults: resultsJSON})
+        this.props.setSearchResults(resultsJSON)
 
     })
       .catch(error => console.error('Error:', error));
@@ -62,6 +86,7 @@ class App extends Component {
 
 
   render() {
+    console.log("props", this.props)
     return (
       <div className="App">
         <Route path="/login" component={button} />
@@ -74,4 +99,16 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) =>{
+  return {
+    setSearchResults: (updated_tracks) => {
+      dispatch({
+        type: "UPDATE_TRACK_RESULTS",
+        payload: updated_tracks
+      })
+    }
+  }
+}
+
+
+export default connect(null, mapDispatchToProps)(App);
