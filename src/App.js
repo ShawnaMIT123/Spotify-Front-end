@@ -31,7 +31,7 @@ class App extends Component {
    }).then(res => res.json())
    .then(response => {
      this.setState({playlistSongs: response[0]["tracks"]})
-     console.log('Success:', response)}
+   }
  )
    .catch(error => console.error('Error:', error))
  }
@@ -86,7 +86,7 @@ class App extends Component {
 
 
   render() {
-    console.log("props", this.props)
+    // console.log("props", this.props)
     return (
       <div className="App">
         <Route path="/login" component={button} />

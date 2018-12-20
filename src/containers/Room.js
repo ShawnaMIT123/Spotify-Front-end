@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import BrowseBar from '../components/BrowseBar'
 import HeaderExampleInverted from '../components/Header'
 import TrackList from '../components/TrackList'
+import WebPlayer from '../components/WebPlayer'
 import { Search, Grid, Header, Segment } from 'semantic-ui-react'
+
 
 
 class Room extends Component {
@@ -13,6 +15,8 @@ class Room extends Component {
     return (
       <div >
         <HeaderExampleInverted />
+        <WebPlayer />
+
 
 <br/>
 <br/>

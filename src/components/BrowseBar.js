@@ -48,7 +48,7 @@ handleResultSelect = (e, { result }) => {
 
   render() {
     const { isLoading, value, results } = this.state
-    console.log(this.props)
+    // console.log(this.props)
 
     return (
       <div>
