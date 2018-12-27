@@ -11,6 +11,8 @@ const TrackList = (props) => {
       return <TrackItem key={track.id} track={track} />
     })
   }
+  // "uris": this.props.appstate.playlistSongs.map((uriobject)=>{
+  //   return uriobject.spotify_url})
 
   return(
   <List divided relaxed>

@@ -15,13 +15,7 @@ class Room extends Component {
     return (
       <div >
         <HeaderExampleInverted />
-        <WebPlayer />
-
-
-<br/>
-<br/>
-<br/>
-
+        <WebPlayer appstate={this.props.state} />
         <Grid>
           <Grid.Column width={11}>
             <TrackList appState={this.props.state} />
