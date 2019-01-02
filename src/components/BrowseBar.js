@@ -62,6 +62,7 @@ handleResultSelect = (e, { result }) => {
                   }
                   results={this.props.results}
                   value={value}
+                  placeholder={'Search mail...'}
                   {...this.props}
                 />
 

@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
-import { Button } from 'react-bootstrap';
+import { Button } from 'semantic-ui-react'
 import { Route } from 'react-router-dom';
 import SearchBar from './components/SearchBar'
 import BrowseBar from './components/BrowseBar'
+import LoginPage from './components/LoginPage'
 import Room from './containers/Room'
 import {connect} from 'react-redux'
 
-const button = () => {return <Button as="a" href="http://localhost:3000/api/v1/login"> Login </Button>}
+const button = () => {return <Button as="a" href="http://localhost:3000/api/v1/login"  color='grey'> Login </Button>}
 
 
 class App extends Component {
 
  state = {browseResults: [],
-   playlistSongs: []
+   playlistSongs: [],
+   userID: null
  }
 
  componentDidMount(){
@@ -89,7 +91,7 @@ class App extends Component {
     // console.log("props", this.props)
     return (
       <div className="App">
-        <Route path="/login" component={button} />
+        <Route path="/login" component={LoginPage} />
 
         <Route path="/success" render={(props) => <Room {...props} state={this.state} onBrowseChange={this.onBrowseChange} />}
           />

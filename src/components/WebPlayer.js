@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
 
+var mainContainer = document.getElementById('js-main-container'),
+    background = document.getElementById('js-background');
 
 class WebPlayer extends Component {
 
@@ -14,18 +16,17 @@ class WebPlayer extends Component {
       trackName: "Track Name",
       artistName: "Artist Name",
       albumName: "Album Name",
-      playing: false,
+      paused: false,
       position: 0,
       duration: 0,
       uris: [],
-      startTime: null
+      startTime: null,
+      counter: 0
     };
 
-
-
     this.playerCheckInterval = null;
-
   }
+
   componentDidMount(){
 
     fetch("http://localhost:3000/api/v1/users/1", {
@@ -41,7 +42,6 @@ class WebPlayer extends Component {
       })
     })
   }
-  // 'BQC3d17lk_YbAr3sNN5IBMENQuvhqwiChcQfrhuhm8Y6IdAUwrIYDikRYolHJCi37eJL85-K-Dy8sIWVAOlRaUQaK0S7Wc88PF28feUklsqKU89rl3NQhMJoCpBFJTTsETGKe3dTLxmzqkL9wwDtOspDfObQ8PcnDptCJ6pL'
 
   handleLogin() {
     if (this.state.token !== "") {
@@ -62,17 +62,17 @@ class WebPlayer extends Component {
         name: "Shawna's New Spotify Player",
         getOAuthToken: cb => { cb(token); },
       });
-
+      this.player.connect();
+      console.log("player connected")
        this.createEventHandlers();
 
       // finally, connect!
-      this.player.connect();
+
     }
   }
 
 
   createEventHandlers() {
-
     this.player.on('initialization_error', e => { console.error(e); });
     this.player.on('authentication_error', e => {
       console.error(e);
@@ -82,25 +82,16 @@ class WebPlayer extends Component {
     this.player.on('playback_error', e => { console.error(e); });
 
     // Playback status updates
-    // this.player.on('player_state_changed', state => this.onStateChanged(state));
     this.player.on('player_state_changed', state => this.settingStateofNewSong(state));
 
-
-     // this.player.on('ready', data => {
-     //   console.log(data)
-     //   let { device_id } = data;
-     //   console.log("Let the music play on!");
-     //   this.setState({ deviceId: device_id });
-     // });
     // Ready
     this.player.on('ready', async data => {
       let { device_id } = data;
       console.log("Let the music play on!");
       await this.setState({ deviceId: device_id });
       this.transferPlaybackHere();
-      this.playFirstSong();
+      // setTimeout(() => this.playQueueSong(), 2000);
     });
-
 
   }
 
@@ -118,47 +109,21 @@ class WebPlayer extends Component {
       "device_ids": [ deviceId ],
       "play": true,
     }),
-  });
+  }).then(console.log("transferedPlaybackHere!"))
   this.getCurrentStateEverySecond();
 }
 
-onStateChanged(state) {
-  // if we're no longer listening to music, we'll get a null state.
-
-
-  console.log(state)
-  if (state !== null) {
-    let {
-          current_track: currentTrack,
-        } = state.track_window;
-      let {
-              position,
-              duration,
-            } = state;
-
-    const trackName = currentTrack.name;
-    const albumName = currentTrack.album.name;
-    const artistName = currentTrack.artists
-      .map(artist => artist.name)
-      .join(", ");
-    const playing = !state.paused;
-    this.setState({
-      position,
-      duration,
-      trackName,
-      albumName,
-      artistName,
-      playing
-
-    });
-  }
-}
 
 settingStateofNewSong(state) {
   // if we're no longer listening to music, we'll get a null state.
+console.log("prior state" , state)
+console.log("prior this.state" , this.state)
 
 ////first song to change to after playback transfer
-if ((state !== null && state.position == 0 && state.paused == false && state.duration == this.state.duration) || (state !== null && state.position == 0 && state.playing == true) || (state !== null && state.position == 0 && this.state.duration == 0)){
+if(this.state.counter == 0 ){
+
+
+} else if ((state !== null && state.position == 0 && state.paused == false && state.duration == this.state.duration) || (state !== null && state.position == 0 && state.playing == true) || (state !== null && state.position == 0 && this.state.duration == 0) || (state !== null && state.position == 0 && state.paused == false  && state.duration > 0 )){
   console.log("duration", this.state.duration)
 
   let {
@@ -174,7 +139,7 @@ if ((state !== null && state.position == 0 && state.paused == false && state.dur
   const artistName = currentTrack.artists
     .map(artist => artist.name)
     .join(", ");
-  const playing = !state.paused;
+  const paused = state.paused;
   console.log("running settingStateofNewSongFirstSong", state)
   this.setState({
     position,
@@ -182,12 +147,12 @@ if ((state !== null && state.position == 0 && state.paused == false && state.dur
     trackName,
     albumName,
     artistName,
-    playing
+    paused
 
   }, ()=>{
     console.log("settingStateofNewSong", this.state)
 
-        setTimeout(() => this.playFirstSong(), 3000 + duration)
+        setTimeout(() => this.playQueueSong(), 3000 + duration)
         setTimeout(() => this.deleteFinishedSong(), duration)
   });
 
@@ -207,21 +172,32 @@ else if (state !== null) {
     const artistName = currentTrack.artists
       .map(artist => artist.name)
       .join(", ");
-    const playing = !state.paused;
+    const paused = state.paused;
     this.setState({
       position,
       duration,
       trackName,
       albumName,
       artistName,
-      playing
+      paused
 
     });
     console.log("first playback", this.state)
   }
+  //identify if this is the first state change
+  this.setState(currentState => {
+    return {counter: currentState.counter + 1 };
+  });
+
 }
 
-playFirstSong = () => {
+playQueueSong = () => {
+///If playlist is empty
+  if(this.props.appstate.playlistSongs.length == 0){
+    console.log("Song List is Empty")
+  }else {
+
+
   console.log("playlist pressed")
   console.log("appState", this.props.appstate)
   const { deviceId, token, uris} = this.state;
@@ -250,21 +226,15 @@ playFirstSong = () => {
       .then(response => console.log('Success:', JSON.stringify(response)))
       .catch(error => console.error('Error:', error));
     });
-
-
-
-
-
     })
   .catch(error => console.error('Error:', error));
-
+  }
 }
 
 deleteFinishedSong = () => {
   console.log("playlist pressed")
   console.log("appState", this.props.appstate)
   const { deviceId, token, uris} = this.state;
-
 
 
 
@@ -302,6 +272,7 @@ playRoomPlaylist() {
 }
 
 getCurrentPlayerState(){
+  console.log("setting CurrentPlayStateIncrement")
   this.player.getCurrentState().then(state => {
 
     if (!state) {
@@ -322,14 +293,14 @@ getCurrentPlayerState(){
           const artistName = currentTrack.artists
             .map(artist => artist.name)
             .join(", ");
-          const playing = !state.paused;
+          const paused = state.paused;
           this.setState({
             position,
             duration,
             trackName,
             albumName,
             artistName,
-            playing
+            paused
 
           });
            // console.log(this.state)
@@ -359,7 +330,7 @@ getCurrentStateEverySecond() {
       error,
       position,
       duration,
-      playing,
+      paused,
     } = this.state;
 
   return (
