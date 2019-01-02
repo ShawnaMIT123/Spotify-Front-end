@@ -66,21 +66,22 @@ class App extends Component {
         headers: headers()
       }).then(res => res.json())
       .then(response => {
-        
 
-        console.log('Success:', JSON.stringify(response))
+
+        // console.log('Success:', JSON.stringify(response))
         let resultsJSON = response["tracks"].items.map((track)=>{
           return {"title": track.name,
           "image": track.album.images[0].url,
         "artist": track.artists.map(artist => artist.name).join(", "),
         "uri": track.uri,
       "album": track.album.name,
-      "duration": track.duration_ms
+      "duration": track.duration_ms,
+      "key": track.uri
     }
         })
-        console.log(resultsJSON)
-
-        this.setState({browseResults: resultsJSON})
+        // console.log(resultsJSON)
+        //
+        // this.setState({browseResults: resultsJSON})
         this.props.setSearchResults(resultsJSON)
 
     })

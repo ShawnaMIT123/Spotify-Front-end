@@ -46,16 +46,17 @@ class Room extends Component {
             <Grid.Row>
               <WebPlayer2 />
             </Grid.Row>
-            <Grid.Row>
-                <TableTest />
-            </Grid.Row>
-            <Grid.Row>
-      <BrowseBar onBrowseChange={this.props.onBrowseChange} appState={this.props.state}/>
-            </Grid.Row>
 
-
-
-
+              <Grid>
+                <Grid.Row>
+                  <Grid.Column width={9}>
+                    <TableTest />
+                  </Grid.Column>
+                  <Grid.Column width={4}>
+                          <BrowseBar onBrowseChange={this.props.onBrowseChange} appState={this.props.state}/>
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
           </Grid.Column>
         </Grid>
       </div>

@@ -1,7 +1,8 @@
 import {
   UPDATE_AUTHORIZATION,
   LOGOUT_USER,
-  UPDATE_ROOM_PLAYLIST
+  UPDATE_ROOM_PLAYLIST,
+  UPDATE_CURRENT_USERS
 } from './actions/types'
 
 const defaultState =  {
@@ -13,17 +14,17 @@ const defaultState =  {
   error: false,
   loggedInUsers:[],
   selectedSong:{},
-  playlist: []
+  playlist: [],
+  users:[]
 
 }
 
 
 function reducer(state=defaultState, action){
-  console.log(action)
   switch (action.type) {
     case "UPDATE_TRACK_RESULTS":
+      console.log('updating track results with', action.payload)
         return {...state, results: action.payload}
-      break;
       case (UPDATE_AUTHORIZATION):
             return Object.assign({}, state, {user: action.payload.user, isLoggedIn: true})
       case (LOGOUT_USER):
@@ -34,6 +35,8 @@ function reducer(state=defaultState, action){
             })
         case (UPDATE_ROOM_PLAYLIST):
                     return Object.assign({}, state, {playlist: action.payload.playlist})
+      case (UPDATE_CURRENT_USERS):
+                    return Object.assign({}, state, {users: action.payload.users})
 
     default:
       return state

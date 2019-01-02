@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
 import { fetchAuthorization } from '../actions/AuthActions'
 import { getRoomTracks} from '../actions/AuthActions'
+import { getCurrentUsers} from '../actions/AuthActions'
 
 var mainContainer = document.getElementById('js-main-container'),
     background = document.getElementById('js-background');
@@ -83,10 +85,11 @@ createPlayer() {
     getOAuthToken: cb => { cb(this.props.user.user["access_token"]); },
   });
   this.player.connect();
-  console.log("player connected")
+  // //console.log("player connected")
    this.createEventHandlers();
 
    setInterval(()=>{this.props.getRoomTracks()}, 1000);
+   setInterval(()=>{this.props.getCurrentUsers()}, 1000);
 }
 
   createEventHandlers() {
@@ -124,7 +127,7 @@ createPlayer() {
     // Ready
     this.player.on('ready', async data => {
       let { device_id } = data;
-      console.log("Let the music play on!");
+      //console.log("Let the music play on!");
       await this.setState({ deviceId: device_id });
       this.transferPlaybackHere();
       // setTimeout(() => this.playQueueSong(), 2000);
@@ -153,15 +156,15 @@ createPlayer() {
 
 settingStateofNewSong(state) {
   // if we're no longer listening to music, we'll get a null state.
-console.log("prior state" , state)
-console.log("prior this.state" , this.state)
+//console.log("prior state" , state)
+//console.log("prior this.state" , this.state)
 
 ////first song to change to after playback transfer
 if(this.state.counter == 0 ){
 
 
 } else if ((state !== null && state.position == 0 && state.paused == false && state.duration == this.state.duration) || (state !== null && state.position == 0 && state.playing == true) || (state !== null && state.position == 0 && this.state.duration == 0) || (state !== null && state.position == 0 && state.paused == false  && state.duration > 0 )){
-  console.log("duration", this.state.duration)
+  //console.log("duration", this.state.duration)
 
   let {
         current_track: currentTrack,
@@ -178,7 +181,7 @@ if(this.state.counter == 0 ){
     .join(", ");
   const paused = state.paused;
 
-  console.log("running settingStateofNewSongFirstSong", state)
+  //console.log("running settingStateofNewSongFirstSong", state)
   this.setState({
     position,
     duration,
@@ -188,7 +191,7 @@ if(this.state.counter == 0 ){
     paused
 
   }, ()=>{
-    console.log("settingStateofNewSong", this.state)
+    // //console.log("settingStateofNewSong", this.state)
 
         setTimeout(() => this.playQueueSong(), 3000 + duration)
         // setTimeout(() => this.deleteFinishedSong(), duration)
@@ -220,7 +223,7 @@ else if (state !== null) {
       paused
 
     });
-    console.log("first playback", this.state)
+    // //console.log("first playback", this.state)
   }
   //identify if this is the first state change
   this.setState(currentState => {
@@ -236,8 +239,8 @@ playQueueSong = () => {
   }else {
 
 
-  console.log("playlist pressed")
-  console.log("appState", this.props.appstate)
+  // //console.log("playlist pressed")
+  // //console.log("appState", this.props.appstate)
   const { deviceId, token, uris} = this.state;
 
   fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
@@ -252,7 +255,7 @@ playQueueSong = () => {
     })
   })
   .then(response => {
-    console.log('Success:', JSON.stringify(response))
+    // //console.log('Success:', JSON.stringify(response))
     this.setState({startTime: Date.now()}, ()=>{
       fetch(`http://localhost:3000/api/v1/tracks/${this.props.appstate.playlistSongs[0].id}`, {
         method: 'PATCH', // or 'PUT'
@@ -270,8 +273,8 @@ playQueueSong = () => {
 }
 
 // deleteFinishedSong = () => {
-//   console.log("playlist pressed")
-//   console.log("appState", this.props.appstate)
+//   //console.log("playlist pressed")
+//   //console.log("appState", this.props.appstate)
 //   const { deviceId, token, uris} = this.state;
 //
 //
@@ -279,14 +282,14 @@ playQueueSong = () => {
 //   fetch(`http://localhost:3000/api/v1/tracks/${this.props.appstate.playlistSongs[0].id}`, {
 //     method: 'DELETE'// or 'PUT'
 //   })
-//   .then(response => console.log('Success:', JSON.stringify(response)))
+//   .then(response => //console.log('Success:', JSON.stringify(response)))
 //   .catch(error => console.error('Error:', error));
 //
 // }
 
 playRoomPlaylist() {
-  console.log("playlist pressed")
-  console.log("appState", this.props.appstate)
+  //console.log("playlist pressed")
+  //console.log("appState", this.props.appstate)
   const { deviceId, token, uris } = this.state;
 
 
@@ -304,13 +307,13 @@ playRoomPlaylist() {
   .then(result => result.json())
   .then((tracks) =>{
 
-    console.log(tracks)
+    // //console.log(tracks)
   })
 
 }
 
 getCurrentPlayerState(){
-  console.log("setting CurrentPlayStateIncrement")
+  ////console.log("setting CurrentPlayStateIncrement")
   this.player.getCurrentState().then(state => {
 
     if (!state) {
@@ -343,7 +346,7 @@ getCurrentPlayerState(){
             albumImage
 
           });
-           // console.log(this.state)
+           // //console.log(this.state)
         }
     })
 }
@@ -401,7 +404,7 @@ getCurrentStateEverySecond() {
 
 
 
-console.log(this.state)
+//console.log(this.state)
   return (
     <div>
       <div className="playerbackgroud">
@@ -438,10 +441,12 @@ const mapStateToProps = (state) => {
     user: state.user
   }
 }
-
-const mapDispatchToProps = {
-    getRoomTracks
+const mapDispatchToProps = (dispatch) => {
+    return {
+        ...bindActionCreators({ getRoomTracks, getCurrentUsers }, dispatch)
+    }
 }
+
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(WebPlayer)

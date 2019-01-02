@@ -20,7 +20,7 @@ class TableExampleVeryBasic extends React.Component {
   render() {
     console.log("Table", this.props)
     return (
-      <Table basic='very' inverted>
+      <Table basic='very'  compact='very' size='small' inverted collapsing>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Title</Table.HeaderCell>

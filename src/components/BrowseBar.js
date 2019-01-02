@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { Search, Grid, Header, Segment } from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import { headers }  from '../auth/AuthHeaders'
-
+import {createHTMLImage} from '../ReactLibrary.js'
 
 class BrowseBar extends Component {
 
@@ -48,24 +48,34 @@ handleResultSelect = (e, { result }) => {
 
   render() {
     const { isLoading, value, results } = this.state
-    // console.log(this.props)
-
+    const resRender = ({ image, album, title, description }) => [
+  image && (
+    <div className='image'>
+      {createHTMLImage(image, { autoGenerateKey: true })}
+    </div>
+  ),
+  <div key='content' className='content'>
+    {album && <div className='price'>{album}</div>}
+    {title && <div className='title'>{title}</div>}
+    {description && <div className='description'>{description}</div>}
+  </div>
+]
+    console.log(this.props.results.slice(-10, 1))
+ // resultRenderer={resRender}
     return (
-      <div>
 
-                <Search aligned='right'
+      <div>
+                <Search aligned={'right'}
                   loading={isLoading}
                   onResultSelect={this.handleResultSelect}
                   onSearchChange={(e)=> this.setState({value: e.target.value}, () => {
                       this.props.onBrowseChange(this.state.value)
                     })
                   }
-                  results={this.props.results}
+                  results={this.props.results.slice(-10, -1)}
                   value={value}
                   placeholder={'Search by Track...'}
-                  {...this.props}
                 />
-
           </div>
 
     );

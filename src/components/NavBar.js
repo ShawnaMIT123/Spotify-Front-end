@@ -50,6 +50,30 @@ export default class MenuExampleInvertedVertical extends Component {
         <Menu.Item />
         <Menu.Item />
         <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
+          <Menu.Item />
       </Menu>
     )
   }

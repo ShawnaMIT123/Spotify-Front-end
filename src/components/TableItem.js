@@ -11,11 +11,11 @@ const millisToMinutesAndSeconds = (millis) =>{
 
   return(
   <Table.Row>
-    <Table.Cell>{props.track.artist}</Table.Cell>
-    <Table.Cell>{props.track.title}</Table.Cell>
-    <Table.Cell>{props.track.album}</Table.Cell>
-    <Table.Cell>{millisToMinutesAndSeconds(props.track.duration_ms)}</Table.Cell>
-    <Table.Cell>{props.track.user_name}</Table.Cell>
+    <Table.Cell size='tiny'>{props.track.title}</Table.Cell>
+    <Table.Cell size='tiny'>{props.track.artist}</Table.Cell>
+    <Table.Cell size='tiny'>{props.track.album}</Table.Cell>
+    <Table.Cell size='tiny'>{millisToMinutesAndSeconds(props.track.duration_ms)}</Table.Cell>
+    <Table.Cell size='tiny'>{props.track.user_name}</Table.Cell>
   </Table.Row>)
 }
 

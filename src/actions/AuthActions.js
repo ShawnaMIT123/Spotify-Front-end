@@ -3,7 +3,8 @@ import { headers }  from '../auth/AuthHeaders'
 import {
   UPDATE_AUTHORIZATION,
   LOGOUT_USER,
-  UPDATE_ROOM_PLAYLIST
+  UPDATE_ROOM_PLAYLIST,
+  UPDATE_CURRENT_USERS
 } from './types'
 
 // export function fetchAuthorization(code) {
@@ -45,6 +46,20 @@ export function getRoomTracks(){
       console.log(json)
       if (!json.error){
         return dispatch({type: UPDATE_ROOM_PLAYLIST, payload: {playlist: json}})
+      }
+    })
+  }
+}
+export function getCurrentUsers(){
+  return (dispatch) => {
+    return fetch(`${ApiUrl}users/index`, {
+      headers: headers()
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json)
+      if (!json.error){
+        return dispatch({type: UPDATE_CURRENT_USERS, payload: {users: json}})
       }
     })
   }
