@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { headers }  from './auth/AuthHeaders'
 import './App.css';
 import { Button } from 'semantic-ui-react'
 import { Route } from 'react-router-dom';
@@ -19,61 +20,63 @@ class App extends Component {
    userID: null
  }
 
- componentDidMount(){
+ // componentDidMount(){
+ //
+ //   setInterval(this.getData, 1000);
+ // }
 
-   setInterval(this.getData, 1000);
- }
-
- getData = () => {
-   fetch("http://localhost:3000/api/v1/rooms", {
-     method: 'GET', // or 'PUT'
-     headers:{
-       'Content-Type': 'application/json'
-     }
-   }).then(res => res.json())
-   .then(response => {
-     this.setState({playlistSongs: response[0]["tracks"]})
-   }
- )
-   .catch(error => console.error('Error:', error))
- }
-
-  onSearchSubmit = (term) => {
-    fetch("http://localhost:3000/api/v1/users/addPlaylist", {
-      method: 'POST', // or 'PUT'
-      body: JSON.stringify(term), // data can be `string` or {object}!
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    }).then(res => res.json())
-    .then(response => console.log('Success:', JSON.stringify(response)))
-    .catch(error => console.error('Error:', error));
-      // const response = await axios.get('http://localhost:3000/api/v1/users/addSong',{
-      //   params: { query: term},
-      //   headers: {
-      //     Authorization: 'Client-ID 81fc93b8332e81b7fcc8a512b5d5fd2e7b168b6c123396f4367ab2f03bbc03f6'
-      //   }
-      //
-      // })
-      // this.setState({images: response.data.results })
-    }
-///search spotify api for aritst and returning tracks to state which will then be used as brower bar results
+ // getData = () => {
+ //   fetch("http://localhost:3000/api/v1/rooms", {
+ //     method: 'GET', // or 'PUT'
+ //     headers:{
+ //       'Content-Type': 'application/json'
+ //     }
+ //   }).then(res => res.json())
+ //   .then(response => {
+ //     this.setState({playlistSongs: response[0]["tracks"]})
+ //   }
+ // )
+ //   .catch(error => console.error('Error:', error))
+ // }
+//
+//   onSearchSubmit = (term) => {
+//     fetch("http://localhost:3000/api/v1/users/addPlaylist", {
+//       method: 'POST', // or 'PUT'
+//       body: JSON.stringify(term), // data can be `string` or {object}!
+//       headers:{
+//         'Content-Type': 'application/json'
+//       }
+//     }).then(res => res.json())
+//     .then(response => console.log('Success:', JSON.stringify(response)))
+//     .catch(error => console.error('Error:', error));
+//       // const response = await axios.get('http://localhost:3000/api/v1/users/addSong',{
+//       //   params: { query: term},
+//       //   headers: {
+//       //     Authorization: 'Client-ID 81fc93b8332e81b7fcc8a512b5d5fd2e7b168b6c123396f4367ab2f03bbc03f6'
+//       //   }
+//       //
+//       // })
+//       // this.setState({images: response.data.results })
+//     }
+// ///search spotify api for aritst and returning tracks to state which will then be used as brower bar results
     onBrowseChange = (term) => {
       fetch("http://localhost:3000/api/v1/users/browserBar", {
         method: 'POST', // or 'PUT'
         body: JSON.stringify(term), // data can be `string` or {object}!
-        headers:{
-          'Content-Type': 'application/json'
-        }
+        headers: headers()
       }).then(res => res.json())
       .then(response => {
+        
 
         console.log('Success:', JSON.stringify(response))
         let resultsJSON = response["tracks"].items.map((track)=>{
           return {"title": track.name,
           "image": track.album.images[0].url,
-        "artist": track.artists[0].name,
-        "uri": track.uri}
+        "artist": track.artists.map(artist => artist.name).join(", "),
+        "uri": track.uri,
+      "album": track.album.name,
+      "duration": track.duration_ms
+    }
         })
         console.log(resultsJSON)
 

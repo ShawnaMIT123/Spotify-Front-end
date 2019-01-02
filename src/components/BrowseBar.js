@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash'
 import { Search, Grid, Header, Segment } from 'semantic-ui-react'
 import {connect} from 'react-redux'
+import { headers }  from '../auth/AuthHeaders'
 
 
 class BrowseBar extends Component {
@@ -17,12 +18,11 @@ componentWillMount() {
 resetComponent = () => this.setState({ isLoading: false, value: '' })
 
 handleResultSelect = (e, { result }) => {
+
   fetch("http://localhost:3000/api/v1/rooms/1", {
     method: 'PATCH', // or 'PUT'
     body: JSON.stringify(result), // data can be `string` or {object}!
-    headers:{
-      'Content-Type': 'application/json'
-    }
+    headers: headers()
   }).then(res => res.json())
   .then(response => {
     // debugger
@@ -53,7 +53,7 @@ handleResultSelect = (e, { result }) => {
     return (
       <div>
 
-                <Search
+                <Search aligned='right'
                   loading={isLoading}
                   onResultSelect={this.handleResultSelect}
                   onSearchChange={(e)=> this.setState({value: e.target.value}, () => {
@@ -62,7 +62,7 @@ handleResultSelect = (e, { result }) => {
                   }
                   results={this.props.results}
                   value={value}
-                  placeholder={'Search mail...'}
+                  placeholder={'Search by Track...'}
                   {...this.props}
                 />
 

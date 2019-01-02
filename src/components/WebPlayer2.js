@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
+import { fetchAuthorization } from '../actions/AuthActions'
+import { getRoomTracks} from '../actions/AuthActions'
 
 var mainContainer = document.getElementById('js-main-container'),
     background = document.getElementById('js-background');
@@ -9,7 +11,7 @@ class WebPlayer extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      token: "",
+      token:"",
       deviceId: "",
       loggedIn: false,
       error: "",
@@ -32,48 +34,60 @@ class WebPlayer extends Component {
 
   componentDidMount(){
 
-    fetch("http://localhost:3000/api/v1/users/1", {
-      method: 'GET', // or 'PUT'
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    }).then(res => res.json())
-    .then(response => {
-      this.setState({token: response["access_token"]
-         }, () => {
-        this.handleLogin()
-      })
-    })
+    // fetch("http://localhost:3000/api/v1/users/1", {
+    //   method: 'GET', // or 'PUT'
+    //   headers:{
+    //     'Content-Type': 'application/json'
+    //   }
+    // }).then(res => res.json())
+    // .then(response => {
+    //   this.setState({token: response["access_token"]
+    //      }, () => {
+    //
+    //     this.handleLogin()
+    //   })
+    // })
+        setTimeout(() => this.handleLogin(), 4000);
   }
 
   handleLogin() {
-    if (this.state.token !== "") {
+
+    if (this.state.token == "") {
       this.setState({ loggedIn: true });
       // check every second for the player.
       this.playerCheckInterval = setInterval(() => this.checkForPlayer(), 1000);
       // this.checkForPlayer()
+      //*****write function to update state and user in the back end logged in*****
     }
   }
 
   checkForPlayer() {
-    const { token } = this.state;
+     // let token  = this.props.user.user["access_token"];
 
-    if (window.Spotify) {
+    if (window.Spotify && this.props.user.user ) {
+
            clearInterval(this.playerCheckInterval);
+           this.setState({token: this.props.user.user["access_token"]}, ()=> this.createPlayer())
 
-      this.player = new window.Spotify.Player({
-        name: "Shawna's New Spotify Player",
-        getOAuthToken: cb => { cb(token); },
-      });
-      this.player.connect();
-      console.log("player connected")
-       this.createEventHandlers();
+      }
 
       // finally, connect!
-
-    }
   }
 
+
+createPlayer() {
+  const { token } = this.state;
+
+  this.player = new window.Spotify.Player({
+    name: "Shawna's New Spotify Player",
+    getOAuthToken: cb => { cb(this.props.user.user["access_token"]); },
+  });
+  this.player.connect();
+  console.log("player connected")
+   this.createEventHandlers();
+
+   setInterval(()=>{this.props.getRoomTracks()}, 1000);
+}
 
   createEventHandlers() {
     this.player.on('initialization_error', e => { console.error(e); });
@@ -416,4 +430,18 @@ console.log(this.state)
   }//end of render
 }//component end
 
-export default WebPlayer;
+// const mapDispatchToProps = {
+//     currentUser
+// }
+const mapStateToProps = (state) => {
+  return {
+    user: state.user
+  }
+}
+
+const mapDispatchToProps = {
+    getRoomTracks
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(WebPlayer)
